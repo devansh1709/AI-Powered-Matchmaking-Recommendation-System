@@ -1,29 +1,29 @@
 [INFO] Scanning for projects...
 [INFO] 
-[INFO] ----------------------< com.MatchmakingBackend:apni-shadi >----------------------
-[INFO] Building apni-shadi 0.0.1-SNAPSHOT
+[INFO] ----------------------< com.MatchmakingBackend:matchmaking-backend >----------------------
+[INFO] Building matchmaking-backend 0.0.1-SNAPSHOT
 [INFO]   from pom.xml
 [INFO] --------------------------------[ jar ]---------------------------------
 [INFO] 
-[INFO] >>> spring-boot:3.5.13:run (default-cli) > test-compile @ apni-shadi >>>
+[INFO] >>> spring-boot:3.5.13:run (default-cli) > test-compile @ matchmaking-backend >>>
 [INFO] 
-[INFO] --- resources:3.3.1:resources (default-resources) @ apni-shadi ---
+[INFO] --- resources:3.3.1:resources (default-resources) @ matchmaking-backend ---
 [INFO] Copying 2 resources from src\main\resources to target\classes
 [INFO] Copying 0 resource from src\main\resources to target\classes
 [INFO] 
-[INFO] --- compiler:3.14.1:compile (default-compile) @ apni-shadi ---
+[INFO] --- compiler:3.14.1:compile (default-compile) @ matchmaking-backend ---
 [INFO] Nothing to compile - all classes are up to date.
 [INFO] 
-[INFO] --- resources:3.3.1:testResources (default-testResources) @ apni-shadi ---
-[INFO] skip non existing resourceDirectory D:\projects\apni-shadi\src\test\resources
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ matchmaking-backend ---
+[INFO] skip non existing resourceDirectory D:\projects\matchmaking-backend\src\test\resources
 [INFO] 
-[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ apni-shadi ---
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ matchmaking-backend ---
 [INFO] Nothing to compile - all classes are up to date.
 [INFO] 
-[INFO] <<< spring-boot:3.5.13:run (default-cli) < test-compile @ apni-shadi <<<
+[INFO] <<< spring-boot:3.5.13:run (default-cli) < test-compile @ matchmaking-backend <<<
 [INFO] 
 [INFO] 
-[INFO] --- spring-boot:3.5.13:run (default-cli) @ apni-shadi ---
+[INFO] --- spring-boot:3.5.13:run (default-cli) @ matchmaking-backend ---
 [INFO] Attaching agents: []
 
   .   ____          _            __ _ _
@@ -35,37 +35,37 @@
 
  :: Spring Boot ::               (v3.5.13)
 
-2026-04-09T12:55:21.263+05:30  INFO 15288 --- [apni-shadi] [           main] com.MatchmakingBackend.MatchmakingBackendApplication       : Starting ApniShadiApplication using Java 21.0.5 with PID 15288 (D:\projects\apni-shadi\target\classes started by Ashwni in D:\projects\apni-shadi)
-2026-04-09T12:55:21.266+05:30  INFO 15288 --- [apni-shadi] [           main] com.MatchmakingBackend.MatchmakingBackendApplication       : No active profile set, falling back to 1 default profile: "default"
-2026-04-09T12:55:21.267+05:30 DEBUG 15288 --- [apni-shadi] [           main] o.s.boot.SpringApplication               : Loading source class com.MatchmakingBackend.MatchmakingBackendApplication
-2026-04-09T12:55:21.303+05:30 DEBUG 15288 --- [apni-shadi] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@329dbdbf
-2026-04-09T12:55:21.715+05:30  INFO 15288 --- [apni-shadi] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-04-09T12:55:21.730+05:30 DEBUG 15288 --- [apni-shadi] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.MatchmakingBackend'. Automatic @Repository and @Entity scanning is enabled.
-2026-04-09T12:55:21.761+05:30  INFO 15288 --- [apni-shadi] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 2 JPA repository interfaces.
-2026-04-09T12:55:22.075+05:30 DEBUG 15288 --- [apni-shadi] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Ashwni\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
-2026-04-09T12:55:22.076+05:30 DEBUG 15288 --- [apni-shadi] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Ashwni\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
-2026-04-09T12:55:22.077+05:30 DEBUG 15288 --- [apni-shadi] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
-2026-04-09T12:55:22.095+05:30  INFO 15288 --- [apni-shadi] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-04-09T12:55:22.111+05:30  INFO 15288 --- [apni-shadi] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-04-09T12:55:22.112+05:30  INFO 15288 --- [apni-shadi] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.53]
-2026-04-09T12:55:22.149+05:30  INFO 15288 --- [apni-shadi] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-04-09T12:55:22.150+05:30 DEBUG 15288 --- [apni-shadi] [           main] w.s.c.ServletWebServerApplicationContext : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
-2026-04-09T12:55:22.151+05:30  INFO 15288 --- [apni-shadi] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 847 ms
-2026-04-09T12:55:22.167+05:30 DEBUG 15288 --- [apni-shadi] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
-2026-04-09T12:55:22.168+05:30 DEBUG 15288 --- [apni-shadi] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
-2026-04-09T12:55:22.184+05:30 DEBUG 15288 --- [apni-shadi] [           main] o.s.b.w.s.f.OrderedRequestContextFilter  : Filter 'requestContextFilter' configured for use
-2026-04-09T12:55:22.184+05:30 DEBUG 15288 --- [apni-shadi] [           main] s.b.w.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
-2026-04-09T12:55:22.184+05:30 DEBUG 15288 --- [apni-shadi] [           main] o.s.b.w.s.f.OrderedFormContentFilter     : Filter 'formContentFilter' configured for use
-2026-04-09T12:55:22.258+05:30  INFO 15288 --- [apni-shadi] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-04-09T12:55:22.287+05:30  INFO 15288 --- [apni-shadi] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.45.Final
-2026-04-09T12:55:22.309+05:30  INFO 15288 --- [apni-shadi] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-04-09T12:55:22.487+05:30  INFO 15288 --- [apni-shadi] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-04-09T12:55:22.509+05:30  INFO 15288 --- [apni-shadi] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-04-09T12:55:24.005+05:30  WARN 15288 --- [apni-shadi] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1045, SQLState: 28000
-2026-04-09T12:55:24.006+05:30 ERROR 15288 --- [apni-shadi] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Access denied for user 'apni_user'@'localhost' (using password: YES)
-2026-04-09T12:55:24.007+05:30  WARN 15288 --- [apni-shadi] [           main] o.h.e.j.e.i.JdbcEnvironmentInitiator     : HHH000342: Could not obtain connection to query metadata
+2026-04-09T12:55:21.263+05:30  INFO 15288 --- [matchmaking-backend] [           main] com.MatchmakingBackend.MatchmakingBackendApplication       : Starting MatchmakingBackendApplication using Java 21.0.5 with PID 15288 (D:\projects\matchmaking-backend\target\classes started by Ashwni in D:\projects\matchmaking-backend)
+2026-04-09T12:55:21.266+05:30  INFO 15288 --- [matchmaking-backend] [           main] com.MatchmakingBackend.MatchmakingBackendApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-04-09T12:55:21.267+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] o.s.boot.SpringApplication               : Loading source class com.MatchmakingBackend.MatchmakingBackendApplication
+2026-04-09T12:55:21.303+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@329dbdbf
+2026-04-09T12:55:21.715+05:30  INFO 15288 --- [matchmaking-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-09T12:55:21.730+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.MatchmakingBackend'. Automatic @Repository and @Entity scanning is enabled.
+2026-04-09T12:55:21.761+05:30  INFO 15288 --- [matchmaking-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 2 JPA repository interfaces.
+2026-04-09T12:55:22.075+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Ashwni\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
+2026-04-09T12:55:22.076+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : Code archive: C:\Users\Ashwni\.m2\repository\org\springframework\boot\spring-boot\3.5.13\spring-boot-3.5.13.jar
+2026-04-09T12:55:22.077+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] .s.b.w.e.t.TomcatServletWebServerFactory : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
+2026-04-09T12:55:22.095+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-09T12:55:22.111+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-09T12:55:22.112+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.53]
+2026-04-09T12:55:22.149+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-09T12:55:22.150+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] w.s.c.ServletWebServerApplicationContext : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
+2026-04-09T12:55:22.151+05:30  INFO 15288 --- [matchmaking-backend] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 847 ms
+2026-04-09T12:55:22.167+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
+2026-04-09T12:55:22.168+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
+2026-04-09T12:55:22.184+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] o.s.b.w.s.f.OrderedRequestContextFilter  : Filter 'requestContextFilter' configured for use
+2026-04-09T12:55:22.184+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] s.b.w.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
+2026-04-09T12:55:22.184+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] o.s.b.w.s.f.OrderedFormContentFilter     : Filter 'formContentFilter' configured for use
+2026-04-09T12:55:22.258+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-09T12:55:22.287+05:30  INFO 15288 --- [matchmaking-backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.45.Final
+2026-04-09T12:55:22.309+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-09T12:55:22.487+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-09T12:55:22.509+05:30  INFO 15288 --- [matchmaking-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-09T12:55:24.005+05:30  WARN 15288 --- [matchmaking-backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 1045, SQLState: 28000
+2026-04-09T12:55:24.006+05:30 ERROR 15288 --- [matchmaking-backend] [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Access denied for user 'matchmaking_user'@'localhost' (using password: YES)
+2026-04-09T12:55:24.007+05:30  WARN 15288 --- [matchmaking-backend] [           main] o.h.e.j.e.i.JdbcEnvironmentInitiator     : HHH000342: Could not obtain connection to query metadata
 
-org.hibernate.exception.GenericJDBCException: unable to obtain isolated JDBC connection [Access denied for user 'apni_user'@'localhost' (using password: YES)] [n/a]
+org.hibernate.exception.GenericJDBCException: unable to obtain isolated JDBC connection [Access denied for user 'matchmaking_user'@'localhost' (using password: YES)] [n/a]
 	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:63) ~[hibernate-core-6.6.45.Final.jar:6.6.45.Final]
 	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.45.Final.jar:6.6.45.Final]
 	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.45.Final.jar:6.6.45.Final]
@@ -104,8 +104,8 @@ org.hibernate.exception.GenericJDBCException: unable to obtain isolated JDBC con
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.13.jar:3.5.13]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.13.jar:3.5.13]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.13.jar:3.5.13]
-	at com.MatchmakingBackend.MatchmakingBackendApplication.main(ApniShadiApplication.java:10) ~[classes/:na]
-Caused by: java.sql.SQLException: Access denied for user 'apni_user'@'localhost' (using password: YES)
+	at com.MatchmakingBackend.MatchmakingBackendApplication.main(MatchmakingBackendApplication.java:10) ~[classes/:na]
+Caused by: java.sql.SQLException: Access denied for user 'matchmaking_user'@'localhost' (using password: YES)
 	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:121) ~[mysql-connector-j-9.6.0.jar:9.6.0]
 	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114) ~[mysql-connector-j-9.6.0.jar:9.6.0]
 	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:840) ~[mysql-connector-j-9.6.0.jar:9.6.0]
@@ -124,10 +124,10 @@ Caused by: java.sql.SQLException: Access denied for user 'apni_user'@'localhost'
 	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:61) ~[hibernate-core-6.6.45.Final.jar:6.6.45.Final]
 	... 35 common frames omitted
 
-2026-04-09T12:55:24.011+05:30 ERROR 15288 --- [apni-shadi] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
-2026-04-09T12:55:24.011+05:30  WARN 15288 --- [apni-shadi] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
-2026-04-09T12:55:24.013+05:30  INFO 15288 --- [apni-shadi] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
-2026-04-09T12:55:24.025+05:30 DEBUG 15288 --- [apni-shadi] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+2026-04-09T12:55:24.011+05:30 ERROR 15288 --- [matchmaking-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+2026-04-09T12:55:24.011+05:30  WARN 15288 --- [matchmaking-backend] [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
+2026-04-09T12:55:24.013+05:30  INFO 15288 --- [matchmaking-backend] [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2026-04-09T12:55:24.025+05:30 DEBUG 15288 --- [matchmaking-backend] [           main] .s.b.a.l.ConditionEvaluationReportLogger :
 
 
 ============================
@@ -1259,7 +1259,7 @@ Unconditional classes:
 
 
 
-2026-04-09T12:55:24.034+05:30 ERROR 15288 --- [apni-shadi] [           main] o.s.boot.SpringApplication               : Application run failed
+2026-04-09T12:55:24.034+05:30 ERROR 15288 --- [matchmaking-backend] [           main] o.s.boot.SpringApplication               : Application run failed
 
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
 	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.17.jar:6.2.17]
@@ -1277,7 +1277,7 @@ org.springframework.beans.factory.BeanCreationException: Error creating bean wit
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.13.jar:3.5.13]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.13.jar:3.5.13]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.13.jar:3.5.13]
-	at com.MatchmakingBackend.MatchmakingBackendApplication.main(ApniShadiApplication.java:10) ~[classes/:na]
+	at com.MatchmakingBackend.MatchmakingBackendApplication.main(MatchmakingBackendApplication.java:10) ~[classes/:na]
 Caused by: org.hibernate.service.spi.ServiceException: Unable to create requested service [org.hibernate.engine.jdbc.env.spi.JdbcEnvironment] due to: Unable to determine Dialect without JDBC metadata (please set 'jakarta.persistence.jdbc.url' for common cases or 'hibernate.dialect' when a custom Dialect implementation must be provided)
 	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:276) ~[hibernate-core-6.6.45.Final.jar:6.6.45.Final]
 	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238) ~[hibernate-core-6.6.45.Final.jar:6.6.45.Final]
@@ -1313,7 +1313,7 @@ Caused by: org.hibernate.HibernateException: Unable to determine Dialect without
 [INFO] Total time:  4.933 s
 [INFO] Finished at: 2026-04-09T12:55:24+05:30
 [INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.13:run (default-cli) on project apni-shadi: Process terminated with exit code: 1 -> [Help 1]
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:3.5.13:run (default-cli) on project matchmaking-backend: Process terminated with exit code: 1 -> [Help 1]
 [ERROR] 
 [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
 [ERROR] Re-run Maven using the -X switch to enable full debug logging.
