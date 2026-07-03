@@ -4,6 +4,7 @@ import com.MatchmakingBackend.profile.Profile;
 import com.MatchmakingBackend.profile.ProfileRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -14,13 +15,15 @@ import java.util.Map;
 public class AccountSeeder implements CommandLineRunner {
 	private final AccountRepository accountRepository;
 	private final ProfileRepository profileRepository;
-	private final PasswordHasher passwordHasher;
+	private final PasswordEncoder passwordEncoder;
 
-	public AccountSeeder(AccountRepository accountRepository, ProfileRepository profileRepository, PasswordHasher passwordHasher) {
+	public AccountSeeder(AccountRepository accountRepository, ProfileRepository profileRepository,
+						 PasswordEncoder passwordEncoder) {
 		this.accountRepository = accountRepository;
 		this.profileRepository = profileRepository;
-		this.passwordHasher = passwordHasher;
+		this.passwordEncoder = passwordEncoder;
 	}
+
 
 	@Override
 	public void run(String... args) {
@@ -51,7 +54,7 @@ public class AccountSeeder implements CommandLineRunner {
 		Account account = new Account();
 		account.setEmail(email);
 		account.setPhone("+91-90000-00000");
-		account.setPasswordHash(passwordHasher.hash("Password@123"));
+		account.setPasswordHash(passwordEncoder.encode("Password@123"));
 		account.setProfile(profile);
 		accountRepository.save(account);
 	}

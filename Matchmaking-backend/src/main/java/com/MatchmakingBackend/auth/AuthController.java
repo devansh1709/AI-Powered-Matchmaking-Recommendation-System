@@ -3,6 +3,7 @@ package com.MatchmakingBackend.auth;
 import com.MatchmakingBackend.profile.Profile;
 import com.MatchmakingBackend.profile.ProfileRepository;
 import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +18,15 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public class AuthController {
 	private final AccountRepository accountRepository;
 	private final ProfileRepository profileRepository;
-	private final PasswordHasher passwordHasher;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
 
-	public AuthController(AccountRepository accountRepository, ProfileRepository profileRepository, PasswordHasher passwordHasher) {
+	public AuthController(AccountRepository accountRepository, ProfileRepository profileRepository,
+						  PasswordEncoder passwordEncoder, JwtService jwtService) {
 		this.accountRepository = accountRepository;
 		this.profileRepository = profileRepository;
-		this.passwordHasher = passwordHasher;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtService = jwtService;
 	}
 
 	@PostMapping("/signup")
@@ -38,24 +42,25 @@ public class AuthController {
 		Account account = new Account();
 		account.setEmail(request.email().trim().toLowerCase());
 		account.setPhone(request.phone().trim());
-		account.setPasswordHash(passwordHasher.hash(request.password()));
+		account.setPasswordHash(passwordEncoder.encode(request.password()));
 		account.setProfile(savedProfile);
+		account.setRole(Role.USER);
 		accountRepository.save(account);
 
-		return authResponse(savedProfile);
+		return authResponse(account, savedProfile);
 	}
 
 	@PostMapping("/login")
 	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
 		Account account = accountRepository.findByEmailIgnoreCase(request.email())
 				.orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "Invalid email or password"));
-		if (!passwordHasher.matches(request.password(), account.getPasswordHash())) {
+		if (!passwordEncoder.matches(request.password(), account.getPasswordHash())) {
 			throw new ResponseStatusException(UNAUTHORIZED, "Invalid email or password");
 		}
-		return authResponse(account.getProfile());
+		return authResponse(account, account.getProfile());
 	}
 
-	private static AuthResponse authResponse(Profile profile) {
-		return new AuthResponse("mvp-profile-" + profile.getId(), profile);
+	private AuthResponse authResponse(Account account, Profile profile) {
+		return new AuthResponse(jwtService.generateToken(new CustomUserDetails(account)), profile);
 	}
 }
