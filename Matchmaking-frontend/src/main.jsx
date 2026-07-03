@@ -1,11 +1,12 @@
+import "./polyfills";
 import { StrictMode, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./app.css";
+import { createChatStompClient } from "./services/stompClient";
+
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
-
-const WS_BASE_URL = API_BASE_URL.replace(/^http/, "ws").replace(/\/api$/, "");
 
 const LOGIN_HERO_PHOTO =
   "https://images.pexels.com/photos/30482896/pexels-photo-30482896.jpeg?auto=compress&cs=tinysrgb&w=1800";
@@ -186,6 +187,7 @@ function App() {
   const [isRequestCenterOpen, setIsRequestCenterOpen] = useState(false);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [personMessages, setPersonMessages] = useState([]);
+  const [authToken, setAuthToken] = useState(null);
   const knownIncomingRequestIds = useRef(new Set());
   const didLoadRequests = useRef(false);
 
@@ -194,36 +196,41 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!loggedInProfileId) {
+   if (!authToken || !selectedConversationId) {
       return undefined;
     }
-    fetchRequests(loggedInProfileId);
-    fetchConversations(loggedInProfileId);
-    const intervalId = window.setInterval(() => {
-      fetchRequests(loggedInProfileId);
-      fetchConversations(loggedInProfileId);
-    }, 15000);
-    return () => window.clearInterval(intervalId);
-  }, [loggedInProfileId]);
 
-  useEffect(() => {
-    if (!selectedConversationId) {
-      return undefined;
-    }
-    const socket = new WebSocket(
-      `${WS_BASE_URL}/ws/conversations/${selectedConversationId}`,
-    );
-    socket.onmessage = (event) => {
-      const nextMessage = JSON.parse(event.data);
-      if (nextMessage.senderProfileId !== Number(loggedInProfileId)) {
-        playNotificationTone("message");
-      }
-      setPersonMessages((currentMessages) =>
-        upsertChatMessage(currentMessages, nextMessage),
-      );
+    const client = createChatStompClient({
+      token: authToken,
+      conversationId: selectedConversationId,
+
+      onMessage: (nextMessage) => {
+        if (nextMessage.senderProfileId !== Number(loggedInProfileId)) {
+          playNotificationTone("message");
+        }
+
+        setPersonMessages((currentMessages) =>
+          upsertChatMessage(currentMessages, nextMessage),
+        );
+      },
+
+     onConnect: () => {
+        console.log(
+          `Subscribed to conversation ${selectedConversationId}`,
+        );
+      },
+
+      onError: (error) => {
+        console.error("Chat connection failed:", error);
+      },
+    });
+
+    client.activate();
+
+    return () => {
+      client.deactivate();
     };
-    return () => socket.close();
-  }, [loggedInProfileId, selectedConversationId]);
+  }, [authToken, loggedInProfileId, selectedConversationId]);
 
   const loggedInProfile = useMemo(
     () =>
@@ -298,8 +305,8 @@ function App() {
         throw new Error("Login failed");
       }
       const auth = await response.json();
+      setAuthToken(auth.token);
       await enterSession(auth.profile);
-      setStatus("Logged in with backend account");
     } catch {
       const demoProfile = demoLogin(credentials);
       if (!demoProfile) {
@@ -328,6 +335,7 @@ function App() {
         throw new Error("Signup failed");
       }
       const auth = await response.json();
+      setAuthToken(auth.token);
       await enterSession(auth.profile);
       setStatus("Signup complete. Your match list is ready.");
     } catch {
@@ -785,7 +793,7 @@ function LoginScreen({ onLogin, onSignup, status, error, isLoading }) {
         />
         <div className="login-brand-lockup">
           <span className="brand-mark">V</span>
-          <span>Vivaah.com</span>
+          <span>VivaahAI</span>
         </div>
         <div className="login-photo-caption">
           <span className="caption-kicker">Invitation-only matrimony</span>
@@ -799,7 +807,7 @@ function LoginScreen({ onLogin, onSignup, status, error, isLoading }) {
 
       <section className="login-panel">
         <div className="login-panel-header">
-          <p className="eyebrow">Vivaah.com private beta</p>
+          <p className="eyebrow">VivaahAI private beta</p>
           <h1>
             {mode === "login"
               ? "Enter your private match room."
@@ -1093,7 +1101,7 @@ function TopNav({
     <nav className="top-nav">
       <button className="brand-button" onClick={onLogout}>
         <span className="brand-mark small">V</span>
-        Vivaah.com
+        VivaahAI
       </button>
       <div className="nav-links">
         <a href="#matches">Matches</a>
