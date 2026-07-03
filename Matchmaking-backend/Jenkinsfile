@@ -1,0 +1,89 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "devansh1709/matchmaking-backend"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh './mvnw clean compile -B'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh './mvnw test -B'
+            }
+
+            post {
+                always {
+                    junit allowEmptyResults: true,
+                            testResults: 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh './mvnw package -DskipTests -B'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh """
+                    docker build \
+                    -t ${IMAGE_NAME}:${IMAGE_TAG} \
+                    -t ${IMAGE_NAME}:latest \
+                    .
+                """
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | \
+                        docker login \
+                        -u "$DOCKER_USER" \
+                        --password-stdin
+                    '''
+
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${IMAGE_NAME}:latest"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout || true'
+        }
+
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+
+        failure {
+            echo 'Pipeline failed. Check the failed stage logs.'
+        }
+    }
+}
