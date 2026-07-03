@@ -97,6 +97,25 @@ public class MatchReportService {
 				.toList();
 	}
 
+	public List<MatchCandidate> getMatchesForProfile(Long profileId, List<Profile> candidates) {
+
+		Profile profileForMatching = getProfile(profileId);
+
+		return candidates.stream()
+				.filter(profile -> !profile.getId().equals(profileId))
+				.filter(profile -> isOppositeGender(profileForMatching, profile))
+				.map(profile -> createCalculatedReport(profileId, profile.getId()))
+				.map(report -> new MatchCandidate(
+						report.profileTwo(),
+						report.overallScore(),
+						report.confidence(),
+						topReasons(report),
+						report.recommendation()
+				))
+				.sorted(Comparator.comparingInt(MatchCandidate::overallScore).reversed())
+				.toList();
+	}
+
 	private Profile getProfile(Long id) {
 		return profileRepository.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Profile not found"));

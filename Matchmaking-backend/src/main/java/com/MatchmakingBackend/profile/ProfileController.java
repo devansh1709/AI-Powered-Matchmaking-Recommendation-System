@@ -1,5 +1,6 @@
 package com.MatchmakingBackend.profile;
 
+import com.MatchmakingBackend.match.ProfileEmbeddingService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,9 +19,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequestMapping("/api/profiles")
 public class ProfileController {
 	private final ProfileRepository profileRepository;
+	private final ProfileEmbeddingService profileEmbeddingService;
 
-	public ProfileController(ProfileRepository profileRepository) {
+	public ProfileController(ProfileRepository profileRepository,
+							 ProfileEmbeddingService profileEmbeddingService) { // add param
 		this.profileRepository = profileRepository;
+		this.profileEmbeddingService = profileEmbeddingService;
 	}
 
 	@GetMapping
@@ -41,7 +45,14 @@ public class ProfileController {
 	@PostMapping
 	public Profile createProfile(@Valid @RequestBody Profile profile) {
 		profile.setId(null);
-		return profileRepository.save(profile);
+		Profile saved = profileRepository.save(profile);
+		profileEmbeddingService.indexProfile(saved); // add this line
+		return saved;
+	}
+
+	@PostMapping("/reindex")
+	public String reindex() {
+		return profileEmbeddingService.reindexAll() + " profiles reindexed into Qdrant";
 	}
 
 	private static String blankToNull(String value) {

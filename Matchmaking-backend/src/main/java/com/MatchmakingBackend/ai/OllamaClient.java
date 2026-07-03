@@ -11,7 +11,7 @@ public class OllamaClient implements AiTextClient {
 	private final ChatClient chatClient;
 
 	public OllamaClient(
-			@Qualifier("openAiChatClient") ChatClient chatClient,
+			@Qualifier("ollamaChatClient") ChatClient chatClient,
 			@Value("${spring.ai.ollama.chat.options.model}") String model
 	) {
 		this.chatClient = chatClient;

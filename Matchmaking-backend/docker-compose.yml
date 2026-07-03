@@ -1,16 +1,16 @@
 services:
-  mysql:
-    image: mysql:8.4
-    container_name: matchmaking-backend-mysql
-    environment:
-      MYSQL_DATABASE: matchmaking-backend
-      MYSQL_USER: matchmaking_user
-      MYSQL_PASSWORD: matchmaking_password
-      MYSQL_ROOT_PASSWORD: root_password
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: matchmaking-backend-qdrant
+
     ports:
-      - "3306:3306"
+      - "6333:6333"
+      - "6334:6334"
+
     volumes:
-      - matchmaking-backend-mysql:/var/lib/mysql
+      - matchmaking-backend-qdrant:/qdrant/storage
 
 volumes:
   matchmaking-backend-mysql:
+  matchmaking-backend-qdrant:
