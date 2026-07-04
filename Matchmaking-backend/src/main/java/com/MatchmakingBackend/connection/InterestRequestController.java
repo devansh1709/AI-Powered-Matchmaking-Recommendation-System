@@ -1,19 +1,16 @@
 package com.MatchmakingBackend.connection;
 
+import com.MatchmakingBackend.auth.CustomUserDetails;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/interest-requests")
 public class InterestRequestController {
+
 	private final ConnectionService connectionService;
 
 	public InterestRequestController(ConnectionService connectionService) {
@@ -22,30 +19,42 @@ public class InterestRequestController {
 
 	@GetMapping
 	public List<InterestRequestResponse> getRequests(
-			@RequestParam Long profileId,
+			@AuthenticationPrincipal CustomUserDetails user,
 			@RequestParam(defaultValue = "incoming") String box
 	) {
-		return connectionService.getRequests(profileId, box);
+		return connectionService.getRequests(user.getProfileId(), box);
 	}
 
 	@PostMapping
-	public InterestRequestResponse sendRequest(@Valid @RequestBody CreateInterestRequest command) {
-		return connectionService.sendRequest(command);
+	public InterestRequestResponse sendRequest(
+			@AuthenticationPrincipal CustomUserDetails user,
+			@Valid @RequestBody CreateInterestRequest command
+	) {
+		return connectionService.sendRequest(
+				user.getProfileId(),
+				command
+		);
 	}
 
 	@PostMapping("/{requestId}/accept")
 	public ConversationResponse acceptRequest(
 			@PathVariable Long requestId,
-			@Valid @RequestBody RespondToInterestRequest command
+			@AuthenticationPrincipal CustomUserDetails user
 	) {
-		return connectionService.acceptRequest(requestId, command.profileId());
+		return connectionService.acceptRequest(
+				requestId,
+				user.getProfileId()
+		);
 	}
 
 	@PostMapping("/{requestId}/decline")
 	public InterestRequestResponse declineRequest(
 			@PathVariable Long requestId,
-			@Valid @RequestBody RespondToInterestRequest command
+			@AuthenticationPrincipal CustomUserDetails user
 	) {
-		return connectionService.declineRequest(requestId, command.profileId());
+		return connectionService.declineRequest(
+				requestId,
+				user.getProfileId()
+		);
 	}
 }

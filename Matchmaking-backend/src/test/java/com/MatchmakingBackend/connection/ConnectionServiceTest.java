@@ -37,9 +37,9 @@ class ConnectionServiceTest {
 
     @Test
     void sendRequest_rejectsSelfRequest() {
-        CreateInterestRequest command = new CreateInterestRequest(1L, 1L);
+        CreateInterestRequest command = new CreateInterestRequest( 1L);
 
-        assertThatThrownBy(() -> connectionService.sendRequest(command))
+        assertThatThrownBy(() -> connectionService.sendRequest(1L, command))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("cannot send an interest request to yourself");
 
@@ -58,7 +58,7 @@ class ConnectionServiceTest {
         when(profileRepository.findById(2L)).thenReturn(Optional.of(receiver));
         when(interestRequestRepository.findBetweenProfiles(1L, 2L)).thenReturn(List.of(existing));
 
-        connectionService.sendRequest(new CreateInterestRequest(1L, 2L));
+        connectionService.sendRequest(1L, new CreateInterestRequest( 2L));
 
         verify(interestRequestRepository, never()).save(any());
     }
@@ -99,7 +99,7 @@ class ConnectionServiceTest {
         when(profileRepository.findById(1L)).thenReturn(Optional.of(sender));
         when(chatMessageRepository.save(any(ChatMessage.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        connectionService.sendMessage(5L, new SendChatMessageRequest(1L, "Hello!"));
+        connectionService.sendMessage(5L, 1L, new SendChatMessageRequest("Hello!"));
 
         verify(chatMessageBroadcaster).broadcast(any());
     }

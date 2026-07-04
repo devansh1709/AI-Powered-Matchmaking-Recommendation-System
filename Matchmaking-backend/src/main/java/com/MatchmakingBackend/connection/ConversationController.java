@@ -1,19 +1,16 @@
 package com.MatchmakingBackend.connection;
 
+import com.MatchmakingBackend.auth.CustomUserDetails;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/conversations")
 public class ConversationController {
+
 	private final ConnectionService connectionService;
 
 	public ConversationController(ConnectionService connectionService) {
@@ -21,20 +18,35 @@ public class ConversationController {
 	}
 
 	@GetMapping
-	public List<ConversationResponse> getConversations(@RequestParam Long profileId) {
-		return connectionService.getConversations(profileId);
+	public List<ConversationResponse> getConversations(
+			@AuthenticationPrincipal CustomUserDetails user
+	) {
+		return connectionService.getConversations(
+				user.getProfileId()
+		);
 	}
 
 	@GetMapping("/{conversationId}/messages")
-	public List<ChatMessageResponse> getMessages(@PathVariable Long conversationId, @RequestParam Long profileId) {
-		return connectionService.getMessages(conversationId, profileId);
+	public List<ChatMessageResponse> getMessages(
+			@PathVariable Long conversationId,
+			@AuthenticationPrincipal CustomUserDetails user
+	) {
+		return connectionService.getMessages(
+				conversationId,
+				user.getProfileId()
+		);
 	}
 
 	@PostMapping("/{conversationId}/messages")
 	public ChatMessageResponse sendMessage(
 			@PathVariable Long conversationId,
+			@AuthenticationPrincipal CustomUserDetails user,
 			@Valid @RequestBody SendChatMessageRequest command
 	) {
-		return connectionService.sendMessage(conversationId, command);
+		return connectionService.sendMessage(
+				conversationId,
+				user.getProfileId(),
+				command
+		);
 	}
 }

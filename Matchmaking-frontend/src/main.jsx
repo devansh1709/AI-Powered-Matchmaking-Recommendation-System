@@ -2,6 +2,7 @@ import "./polyfills";
 import { StrictMode, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./app.css";
+import { apiFetch } from "./services/apiClient";
 import { createChatStompClient } from "./services/stompClient";
 
 
@@ -275,7 +276,7 @@ function App() {
     }
   }
 
-  async function enterSession(sessionProfile) {
+  async function enterSession(sessionProfile, token = authToken) {
     knownIncomingRequestIds.current = new Set();
     didLoadRequests.current = false;
     const decoratedProfile = withPhoto(sessionProfile);
@@ -287,9 +288,9 @@ function App() {
     setReport(null);
     setIsAssistantOpen(false);
     setAiMessages([]);
-    await fetchMatches(decoratedProfile.id);
-    await fetchRequests(decoratedProfile.id);
-    await fetchConversations(decoratedProfile.id);
+    await fetchMatches(decoratedProfile.id, token);
+    await fetchRequests(decoratedProfile.id, token);
+    await fetchConversations(decoratedProfile.id, token);
   }
 
   async function loginWithPassword(credentials) {
@@ -306,7 +307,7 @@ function App() {
       }
       const auth = await response.json();
       setAuthToken(auth.token);
-      await enterSession(auth.profile);
+      await enterSession(auth.profile, auth.token);
     } catch {
       const demoProfile = demoLogin(credentials);
       if (!demoProfile) {
@@ -336,7 +337,7 @@ function App() {
       }
       const auth = await response.json();
       setAuthToken(auth.token);
-      await enterSession(auth.profile);
+      await enterSession(auth.profile, auth.token);
       setStatus("Signup complete. Your match list is ready.");
     } catch {
       const localProfile = {
@@ -353,27 +354,25 @@ function App() {
     }
   }
 
-  async function fetchMatches(profileId) {
+  async function fetchMatches(profileId, token = authToken) {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/matches?profileId=${profileId}`,
+      const apiMatches = await apiFetch(
+        "/matches",
+        token,
       );
-      if (!response.ok) {
-        throw new Error("Matches API unavailable");
-      }
-      const apiMatches = await response.json();
+
       setMatches(
         apiMatches.map((match) => ({
           ...match,
           profile: withPhoto(match.profile),
         })),
       );
+
       setStatus("Your match list is ranked from the backend report engine");
-    } catch {
-      setMatches(buildFallbackMatches(profiles, profileId));
-      setStatus(
-        "Preview matches shown. Start the API for ranked backend recommendations.",
-      );
+    } catch (error) {
+      console.error("Failed to load matches:", error);
+      setMatches([]);
+      setStatus(`Failed to load matches: ${error.message}`);
     }
   }
 
@@ -395,26 +394,33 @@ function App() {
     if (!loggedInProfileId || !matchProfileId) {
       return;
     }
+
     setIsReportLoading(true);
     setIsAssistantOpen(false);
+
     try {
-      const response = await fetch(`${API_BASE_URL}/match-reports`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          profileOneId: Number(loggedInProfileId),
-          profileTwoId: Number(matchProfileId),
-        }),
-      });
-      if (!response.ok) {
-        throw new Error("Report API unavailable");
-      }
-      setReport(await response.json());
+      const apiReport = await apiFetch(
+        "/match-reports",
+        authToken,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            profileOneId: Number(loggedInProfileId),
+            profileTwoId: Number(matchProfileId),
+          }),
+        },
+      );
+
+      setReport(apiReport);
       setStatus("Detailed AI-style report is ready");
-    } catch {
+    } catch (error) {
+      console.error("Failed to create report:", error);
+
       const matchProfile =
-        profiles.find((profile) => profile.id === Number(matchProfileId)) ??
-        selectedProfile;
+        profiles.find(
+          (profile) => profile.id === Number(matchProfileId),
+        ) ?? selectedProfile;
+
       setReport(buildFallbackReport(loggedInProfile, matchProfile));
       setStatus(
         "Preview report shown. Start the backend for profile-specific scoring.",
@@ -426,28 +432,31 @@ function App() {
 
   async function sendAiMessage(message) {
     const userMessage = { role: "user", content: message };
+
     setAiMessages((currentMessages) => [
       ...currentMessages,
       userMessage,
       { role: "assistant", content: "Reading both profiles..." },
     ]);
+
     try {
-      const response = await fetch(`${API_BASE_URL}/ai/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          profileOneId: Number(loggedInProfileId),
-          profileTwoId: Number(selectedProfileId),
-          message,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error("AI chat failed");
-      }
-      const answer = await response.json();
+      const answer = await apiFetch(
+        "/ai/chat",
+        authToken,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            profileOneId: Number(loggedInProfileId),
+            profileTwoId: Number(selectedProfileId),
+            message,
+          }),
+        },
+      );
+
       setAiMessages((currentMessages) =>
         replaceLastAssistantMessage(currentMessages, answer.reply),
       );
+
       setStatus(
         answer.generatedByOpenAi
           ? `AI answered with ${answer.model}`
@@ -457,62 +466,67 @@ function App() {
       setAiMessages((currentMessages) =>
         replaceLastAssistantMessage(
           currentMessages,
-          "I could not reach the Spring Boot AI endpoint. Start the backend on port 8080, then ask again. If the backend is running, check its console for the Gemini provider warning.",
+          "I could not reach the Spring Boot AI endpoint. Start the backend on port 8080, then ask again.",
         ),
       );
+
       setStatus(`AI request did not finish: ${error.message}`);
     }
   }
 
-  async function fetchRequests(profileId) {
+  async function fetchRequests(profileId, token = authToken) {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/interest-requests?profileId=${profileId}&box=all`,
+      const apiRequests = await apiFetch(
+        "/interest-requests?box=all",
+        token,
       );
-      if (!response.ok) {
-        throw new Error("Requests API unavailable");
-      }
-      const apiRequests = await response.json();
+
       const decoratedRequests = apiRequests.map(withPhotosOnRequest);
       notifyAboutNewIncomingRequests(decoratedRequests, profileId);
       setInterestRequests(decoratedRequests);
-    } catch {
+    } catch (error) {
+      console.error("Failed to load requests:", error);
       setInterestRequests([]);
     }
   }
 
-  async function fetchConversations(profileId) {
+
+
+  async function fetchConversations(profileId, token = authToken) {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/conversations?profileId=${profileId}`,
+      const apiConversations = await apiFetch(
+        "/conversations",
+        token,
       );
-      if (!response.ok) {
-        throw new Error("Conversations API unavailable");
-      }
-      const apiConversations = await response.json();
-      setConversations(apiConversations.map(withPhotosOnConversation));
-    } catch {
+
+      setConversations(
+        apiConversations.map(withPhotosOnConversation),
+      );
+    } catch (error) {
+      console.error("Failed to load conversations:", error);
       setConversations([]);
     }
   }
 
   async function sendInterest(receiverProfileId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/interest-requests`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          senderProfileId: Number(loggedInProfileId),
-          receiverProfileId: Number(receiverProfileId),
-        }),
-      });
-      if (!response.ok) {
-        throw new Error("Interest request failed");
-      }
-      const request = withPhotosOnRequest(await response.json());
+      const apiRequest = await apiFetch(
+        "/interest-requests",
+        authToken,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            receiverProfileId: Number(receiverProfileId),
+          }),
+        },
+      );
+
+      const request = withPhotosOnRequest(apiRequest);
+
       setInterestRequests((currentRequests) =>
         upsertInterestRequest(currentRequests, request),
       );
+
       setStatus(`Interest sent to ${request.receiverProfile.fullName}`);
     } catch (error) {
       setStatus(`Could not send interest: ${error.message}`);
@@ -520,98 +534,96 @@ function App() {
   }
 
   async function acceptInterest(requestId) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/interest-requests/${requestId}/accept`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profileId: Number(loggedInProfileId) }),
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Accept request failed");
-      }
-      const conversation = withPhotosOnConversation(await response.json());
-      await fetchRequests(loggedInProfileId);
-      await fetchConversations(loggedInProfileId);
-      openConversation(conversation);
-      setStatus("Request accepted. Your private chat is open.");
-    } catch (error) {
-      setStatus(`Could not accept request: ${error.message}`);
-    }
+  try {
+    const apiConversation = await apiFetch(
+  `/interest-requests/${requestId}/accept`,
+  authToken,
+  {
+    method: "POST",
+  },
+);
+
+    const conversation = withPhotosOnConversation(apiConversation);
+
+    await fetchRequests(loggedInProfileId);
+    await fetchConversations(loggedInProfileId);
+
+    openConversation(conversation);
+    setStatus("Request accepted. Your private chat is open.");
+  } catch (error) {
+    setStatus(`Could not accept request: ${error.message}`);
   }
+}
 
   async function declineInterest(requestId) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/interest-requests/${requestId}/decline`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ profileId: Number(loggedInProfileId) }),
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Decline request failed");
-      }
-      const request = withPhotosOnRequest(await response.json());
-      setInterestRequests((currentRequests) =>
-        upsertInterestRequest(currentRequests, request),
-      );
-      setStatus("Request declined.");
-    } catch (error) {
-      setStatus(`Could not decline request: ${error.message}`);
-    }
+  try {
+    const apiRequest = await apiFetch(
+  `/interest-requests/${requestId}/decline`,
+  authToken,
+  {
+    method: "POST",
+  },
+);
+
+    const request = withPhotosOnRequest(apiRequest);
+
+    setInterestRequests((currentRequests) =>
+      upsertInterestRequest(currentRequests, request),
+    );
+
+    setStatus("Request declined.");
+  } catch (error) {
+    setStatus(`Could not decline request: ${error.message}`);
   }
+}
 
   async function openConversation(conversation) {
-    const decoratedConversation = withPhotosOnConversation(conversation);
-    setConversations((currentConversations) =>
-      upsertConversation(currentConversations, decoratedConversation),
+  const decoratedConversation = withPhotosOnConversation(conversation);
+
+  setConversations((currentConversations) =>
+    upsertConversation(currentConversations, decoratedConversation),
+  );
+
+  setSelectedConversationId(conversation.id);
+  setIsRequestCenterOpen(false);
+
+  try {
+    const apiMessages = await apiFetch(
+      `/conversations/${conversation.id}/messages`,
+      authToken,
     );
-    setSelectedConversationId(conversation.id);
-    setIsRequestCenterOpen(false);
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/conversations/${conversation.id}/messages?profileId=${loggedInProfileId}`,
-      );
-      if (!response.ok) {
-        throw new Error("Messages API unavailable");
-      }
-      setPersonMessages(await response.json());
-    } catch {
-      setPersonMessages([]);
-    }
+
+    setPersonMessages(apiMessages);
+  } catch (error) {
+    console.error("Failed to load messages:", error);
+    setPersonMessages([]);
   }
+}
 
   async function sendPersonMessage(message) {
-    if (!selectedConversationId || !message.trim()) {
-      return;
-    }
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/conversations/${selectedConversationId}/messages`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            senderProfileId: Number(loggedInProfileId),
-            message: message.trim(),
-          }),
-        },
-      );
-      if (!response.ok) {
-        throw new Error("Message API unavailable");
-      }
-      const savedMessage = await response.json();
-      setPersonMessages((currentMessages) =>
-        upsertChatMessage(currentMessages, savedMessage),
-      );
-    } catch (error) {
-      setStatus(`Message was not sent: ${error.message}`);
-    }
+  if (!selectedConversationId || !message.trim()) {
+    return;
   }
+
+  try {
+    const savedMessage = await apiFetch(
+      `/conversations/${selectedConversationId}/messages`,
+      authToken,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          message: message.trim(),
+        }),
+      },
+    );
+
+    setPersonMessages((currentMessages) =>
+      upsertChatMessage(currentMessages, savedMessage),
+    );
+  } catch (error) {
+    setStatus(`Message was not sent: ${error.message}`);
+  }
+}
 
   function notifyAboutNewIncomingRequests(requests, profileId) {
     const incomingRequestIds = requests
@@ -654,6 +666,7 @@ function App() {
         conversationCount={conversations.length}
         onOpenRequestCenter={() => setIsRequestCenterOpen((open) => !open)}
         onLogout={() => {
+          setAuthToken(null);
           setLoggedInProfileId(null);
           setSelectedProfileId(null);
           setMatches([]);

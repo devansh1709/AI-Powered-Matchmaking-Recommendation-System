@@ -43,16 +43,26 @@ public class ConnectionService {
 	}
 
 	@Transactional
-	public InterestRequestResponse sendRequest(CreateInterestRequest command) {
-		if (command.senderProfileId().equals(command.receiverProfileId())) {
-			throw new ResponseStatusException(BAD_REQUEST, "You cannot send an interest request to yourself");
+	public InterestRequestResponse sendRequest(
+			Long senderProfileId,
+			CreateInterestRequest command
+	) {
+		if (senderProfileId.equals(command.receiverProfileId())) {
+			throw new ResponseStatusException(
+					BAD_REQUEST,
+					"You cannot send an interest request to yourself"
+			);
 		}
 
-		Profile sender = getProfile(command.senderProfileId());
+		Profile sender = getProfile(senderProfileId);
 		Profile receiver = getProfile(command.receiverProfileId());
 
 		List<InterestRequest> existingRequests =
-				interestRequestRepository.findBetweenProfiles(sender.getId(), receiver.getId());
+				interestRequestRepository.findBetweenProfiles(
+						sender.getId(),
+						receiver.getId()
+				);
+
 		if (!existingRequests.isEmpty()) {
 			return InterestRequestResponse.from(existingRequests.getFirst());
 		}
@@ -60,7 +70,10 @@ public class ConnectionService {
 		InterestRequest request = new InterestRequest();
 		request.setSenderProfile(sender);
 		request.setReceiverProfile(receiver);
-		return InterestRequestResponse.from(interestRequestRepository.save(request));
+
+		return InterestRequestResponse.from(
+				interestRequestRepository.save(request)
+		);
 	}
 
 	@Transactional
@@ -104,15 +117,23 @@ public class ConnectionService {
 	}
 
 	@Transactional
-	public ChatMessageResponse sendMessage(Long conversationId, SendChatMessageRequest command) {
+	public ChatMessageResponse sendMessage(
+			Long conversationId,
+			Long senderProfileId,
+			SendChatMessageRequest command
+	) {
 		Conversation conversation = getConversation(conversationId);
-		requireParticipant(conversation, command.senderProfileId());
+
+		requireParticipant(conversation, senderProfileId);
 
 		ChatMessage message = new ChatMessage();
 		message.setConversation(conversation);
-		message.setSenderProfile(getProfile(command.senderProfileId()));
+		message.setSenderProfile(getProfile(senderProfileId));
 		message.setMessage(command.message().trim());
-		ChatMessageResponse response = ChatMessageResponse.from(chatMessageRepository.save(message));
+
+		ChatMessageResponse response =
+				ChatMessageResponse.from(chatMessageRepository.save(message));
+
 		chatMessageBroadcaster.broadcast(response);
 		return response;
 	}
@@ -140,10 +161,18 @@ public class ConnectionService {
 				.orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Conversation not found"));
 	}
 
-	private static void requireParticipant(Conversation conversation, Long profileId) {
+	private static void requireParticipant(
+			Conversation conversation,
+			Long profileId
+	) {
 		if (!conversation.getProfileOne().getId().equals(profileId)
 				&& !conversation.getProfileTwo().getId().equals(profileId)) {
-			throw new ResponseStatusException(FORBIDDEN, "Profile is not part of this conversation");
+			throw new ResponseStatusException(
+					FORBIDDEN,
+					"Profile is not part of this conversation"
+			);
 		}
 	}
+
+
 }
