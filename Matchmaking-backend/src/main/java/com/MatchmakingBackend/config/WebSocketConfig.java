@@ -1,5 +1,6 @@
 package com.MatchmakingBackend.config;
 
+import com.MatchmakingBackend.security.StompAuthChannelInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

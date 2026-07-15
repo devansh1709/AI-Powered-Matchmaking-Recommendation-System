@@ -1,0 +1,25 @@
+package com.MatchmakingBackend.dto;
+
+import com.MatchmakingBackend.entity.ChatMessage;
+
+import java.time.OffsetDateTime;
+
+public record ChatMessageResponse(
+		Long id,
+		Long conversationId,
+		Long senderProfileId,
+		String senderName,
+		String message,
+		OffsetDateTime createdAt
+) {
+	public static ChatMessageResponse from(ChatMessage message) {
+		return new ChatMessageResponse(
+				message.getId(),
+				message.getConversation().getId(),
+				message.getSenderProfile().getId(),
+				message.getSenderProfile().getFullName(),
+				message.getMessage(),
+				message.getCreatedAt()
+		);
+	}
+}
