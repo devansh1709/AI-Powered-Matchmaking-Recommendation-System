@@ -119,7 +119,8 @@ Create a `.env` file or export these before running the backend (see [Environmen
 export DB_USERNAME=matchmaking_user
 export DB_PASSWORD=matchmaking_password
 export JWT_SECRET=$(openssl rand -base64 48)
-export GEMINI_API_KEY=your-key-here   # only needed if app.ai.provider=gemini
+export GEMINI_API_KEY=your-key-here   # required by default — app.ai.provider defaults to gemini
+export AI_PROVIDER=ollama             # optional override to prefer the local Ollama model instead
 ```
 
 ### 3. Run the backend
@@ -156,7 +157,7 @@ Once running, open **`http://localhost:8080/swagger-ui.html`** for interactive A
 | `JWT_SECRET` | placeholder — **override in any real deployment** | HMAC signing key for JWTs (32+ chars) |
 | `JWT_EXPIRATION_MS` | `86400000` (24h) | Token lifetime |
 | `APP_CORS_ALLOWED_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Allowed frontend origins |
-| `AI_PROVIDER` | `ollama` | `ollama` or `gemini` — which model answers AI advisor chats |
+| `AI_PROVIDER` | `gemini` | `ollama` or `gemini` — which model is preferred for AI advisor chats (the other is used as fallback on failure). **Note:** `docker-compose.yml` hardcodes `AI_PROVIDER: ollama` for the containerized `app` service, so running via Docker Compose prefers Ollama first even though the application's own default is Gemini — override it in `docker-compose.yml` if you want the same order in both environments. |
 | `OLLAMA_BASE_URL` / `OLLAMA_MODEL` | `http://localhost:11434` / `llama3.2` | Local LLM config |
 | `GEMINI_API_KEY` / `GEMINI_MODEL` | _(none)_ / `gemini-2.5-flash-lite` | Gemini config, if used |
 | `QDRANT_HOST` / `QDRANT_PORT` | `localhost` / `6334` | Vector store connection (gRPC port) |
@@ -199,23 +200,36 @@ Covers authentication (signup/login success and failure paths), compatibility sc
 
 ## CI/CD
 
-The included `Jenkinsfile` runs: **checkout → build → test (with JUnit report publishing) → package → Docker build → Docker push → deploy over SSH**. Configure a `dockerhub-credentials` and `ec2-ssh-key` credential in Jenkins to use the push/deploy stages.
+The included `Jenkinsfile` runs: **checkout → build → test (with JUnit report publishing) → package → Docker build → Docker push**. It requires a `dockerhub-credentials` username/password credential in Jenkins for the push stage, and logs out of Docker Hub in a `post { always }` block regardless of outcome.
+
+There is currently no deploy stage in the pipeline — pushing the image to Docker Hub is the last automated step. Rolling it out to EC2 (e.g. over SSH with an `ec2-ssh-key` credential) is a manual step today; see [Roadmap](#roadmap).
 
 ---
 
 ## Project structure
 
 ```
-Matchmaking-backend/
-├── auth/          # Account, JWT issuing/validation, Spring Security config glue
-├── config/        # SecurityConfig, WebSocketConfig, Spring AI config
-├── profile/       # Profile entity, search, seeding
-├── match/         # Compatibility scoring, Qdrant embedding + semantic retrieval, AI narration
-├── connection/    # Interest requests, conversations, chat messages, STOMP broadcasting
-├── ai/            # LLM client routing (Ollama / Gemini) and chat endpoint
+Matchmaking-backend/src/main/java/com/MatchmakingBackend/
+├── controller/     AiController · AuthController · ConversationController ·
+│                   InterestRequestController · MatchController ·
+│                   MatchReportController · ProfileController  (16 REST endpoints total)
+├── service/        AiAdvisorService, MatchReportService, SemanticMatchService,
+│                   ProfileEmbeddingService, ProfileDocumentMapper,
+│                   ConnectionService, ChatMessageBroadcaster
+├── client/         AiClientRouter (Ollama/Gemini preference + fallback), OllamaClient,
+│                   GeminiClient, AiTextClient
+├── security/       JwtService, JwtAuthenticationFilter, StompAuthChannelInterceptor
+│                   (validates the bearer token at STOMP CONNECT), CustomUserDetailsService
+├── config/         SecurityConfig, WebSocketConfig, SpringAiConfig, ProfileSeeder,
+│                   ProfileEmbeddingSeeder, AccountSeeder
+├── entity/          Account, Profile, InterestRequest, Conversation, ChatMessage
+├── repo/            Spring Data JPA repositories for the entities above
+├── dto/             Request/response DTOs
+└── enums/           Role, InterestRequestStatus
+
 Matchmaking-frontend/
-├── src/main.jsx           # App shell (login, dashboard, profile detail, chat)
-├── src/services/          # apiClient (JWT-aware fetch), stompClient (live chat)
+├── src/main.jsx           App shell (login, dashboard, profile detail, chat)
+├── src/services/          apiClient (JWT-aware fetch), stompClient (live chat)
 ```
 
 ---
@@ -226,3 +240,11 @@ Matchmaking-frontend/
 - [ ] Pagination for `/api/profiles` search results
 - [ ] Rate limiting on `/api/auth/**`
 - [ ] Refresh tokens (current JWTs are access-token-only with a fixed expiry)
+
+---
+
+## Author
+
+**Devansh Gupta**  
+B.Tech CSE 2027 · Pranveer Singh Institute of Technology, Kanpur  
+[LinkedIn](https://www.linkedin.com/in/devansh-gupta-720960285/) · [GitHub](https://github.com/devansh1709) · [LeetCode](https://leetcode.com/devansh1709)
